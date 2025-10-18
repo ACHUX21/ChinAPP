@@ -1,0 +1,52 @@
+<!-- Study Card Component -->
+<div class="study-card" id="studyCard">
+    <div class="card-front">
+        <div class="card-content">
+            <div class="card-hanzi" id="cardFrontHanzi"></div>
+            <div class="card-pinyin" id="cardFrontPinyin"></div>
+            <div class="card-hint terminal-text">// click_to_reveal</div>
+        </div>
+    </div>
+    <div class="card-back">
+        <div class="card-content">
+            <div class="card-hanzi" id="cardBackHanzi"></div>
+            <div class="card-pinyin" id="cardBackPinyin"></div>
+            <div class="card-english" id="cardBackEnglish"></div>
+            <div class="card-example terminal-text" id="cardBackExample"></div>
+            <div class="card-meta terminal-text" id="cardBackMeta"></div>
+            <div class="card-notes terminal-text" id="cardBackNotes"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Study Progress Component -->
+<div class="study-progress">
+    <div class="progress-bar">
+        <div class="progress-fill" id="studyProgress"></div>
+    </div>
+    <span class="progress-text" id="progressText">0/0</span>
+</div>
+
+<!-- Rating Buttons Component -->
+<div class="rating-buttons">
+    <button class="btn btn-difficult" onclick="rateCard(1)">
+        <i class="fas fa-times"></i>
+        <span>Again</span>
+        <small class="terminal-text">(1)</small>
+    </button>
+    <button class="btn btn-hard" onclick="rateCard(2)">
+        <i class="fas fa-redo"></i>
+        <span>Hard</span>
+        <small class="terminal-text">(2)</small>
+    </button>
+    <button class="btn btn-good" onclick="rateCard(3)">
+        <i class="fas fa-check"></i>
+        <span>Good</span>
+        <small class="terminal-text">(3)</small>
+    </button>
+    <button class="btn btn-easy" onclick="rateCard(4)">
+        <i class="fas fa-star"></i>
+        <span>Easy</span>
+        <small class="terminal-text">(4)</small>
+    </button>
+</div>

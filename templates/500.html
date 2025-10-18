@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}500 - 神経 flashcards{% endblock %}
+
+{% block content %}
+<div class="error-container terminal-box">
+    <div class="error-code">500</div>
+    <h1>System error</h1>
+    <p class="terminal-text">Something went wrong on our end. The system administrators have been notified.</p>
+    <div class="completion-actions">
+        <button class="btn btn-secondary terminal-box" onclick="window.location.reload()">
+            <span class="terminal-text">retry</span>
+        </button>
+        <button class="btn btn-primary glitch" onclick="window.location.href='{{ url_for('decks.index') }}'">
+            <span class="glitch-text">return_home</span>
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block mobile_nav %}
+<!-- No mobile nav on error pages -->
+{% endblock %}

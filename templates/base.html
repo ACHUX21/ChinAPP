@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}神経 flashcards{% endblock %}</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="app-container">
+        <div class="cyber-grid"></div>
+        <div class="scan-line"></div>
+        
+        <div class="mobile-menu-btn" id="mobileMenuBtn">
+            <div class="menu-bar"></div>
+            <div class="menu-bar"></div>
+            <div class="menu-bar"></div>
+        </div>
+
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">
+                    <span class="logo-icon">神経</span>
+                    <span class="logo-text">
+                        {% if request.endpoint == 'study.study_deck' %}
+                            study.exe
+                        {% else %}
+                            flashcards.exe
+                        {% endif %}
+                    </span>
+                </h1>
+                <div class="streak-display">
+                    <div class="streak-info">
+                        <span class="pulse-dot"></span>
+                        <span class="streak-count" id="currentStreak">0</span>
+                        <span class="streak-label">
+                            {% if request.endpoint == 'study.study_deck' %}
+                                // cards_remaining
+                            {% else %}
+                                // current_streak
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+        {% block mobile_nav %}{% endblock %}
+        
+        <footer class="footer terminal-box">
+            <div class="footer-content">
+                <p>// system_status: **online**</p>
+                <p>// version: **v1.0.1**</p>
+                <p>// &copy; 2025 <a href="achux21.com" target="_blank" class="footer-link">achux21</a></p>
+            </div>
+        </br>
+        </br>
+        </br>
+        </br>
+        </br>
+
+        </footer>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <div id="confirmationModal" class="confirmation-modal">
+        <div class="modal-content terminal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">> confirm_deletion</h3>
+                <p class="modal-message terminal-text" id="modalMessage">Are you sure you want to delete this card? This action cannot be undone.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary terminal-box" onclick="hideConfirmationModal()">
+                    <span class="terminal-text">cancel</span>
+                </button>
+                <button class="btn btn-danger glitch" id="confirmDeleteBtn">
+                    <span class="glitch-text">confirm_delete</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    {% block extra_js %}{% endblock %}
+    
+    {% if cards %}
+    <script>
+        // Pass cards data to study session
+        window.studyCards = {{ cards|tojson }};
+    </script>
+    {% endif %}
+    
+</body>
+</html>

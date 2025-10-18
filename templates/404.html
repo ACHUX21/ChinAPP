@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}404 - 神経 flashcards{% endblock %}
+
+{% block content %}
+<div class="error-container terminal-box">
+    <div class="error-code">404</div>
+    <h1>Page not found</h1>
+    <p class="terminal-text">The requested page does not exist in the system directory.</p>
+    <button class="btn btn-primary glitch" onclick="window.location.href='{{ url_for('decks.index') }}'">
+        <span class="glitch-text">return_home</span>
+    </button>
+</div>
+{% endblock %}
+
+{% block mobile_nav %}
+<!-- No mobile nav on error pages -->
+{% endblock %}

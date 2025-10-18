@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Study {{ deck.name }} - 神経 flashcards{% endblock %}
+
+{% block content %}
+<!-- Study View -->
+<div id="studyView" class="view active">
+    <!-- Study Header -->
+    <div class="study-header">
+        <div class="study-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="studyProgress" style="width: 0%"></div>
+            </div>
+            <span class="progress-text" id="progressText">0/{{ cards|length }}</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="window.location.href='{{ url_for('decks.deck_detail', deck_id=deck.id) }}'">
+            <i class="fas fa-times"></i>
+            <span class="desktop-only">Exit</span>
+        </button>
+    </div>
+
+    <!-- Deck Info -->
+    <div class="study-deck-info terminal-box">
+        <h3 class="deck-name">{{ deck.name }}</h3>
+        <p class="terminal-text">{{ cards|length }} cards to study</p>
+    </div>
+
+    <!-- Card Container -->
+    <div class="card-container">
+        {% if cards %}
+        <div class="study-card" id="studyCard" onclick="flipCard()">
+            <div class="card-front">
+                <div class="card-content">
+                    <div class="card-hanzi" id="cardFrontHanzi">{{ cards[0].hanzi }}</div>
+                    {% if cards[0].pinyin %}
+                    <div class="card-pinyin" id="cardFrontPinyin">{{ cards[0].pinyin }}</div>
+                    {% endif %}
+                    <div class="card-hint terminal-text">// click_to_reveal</div>
+                </div>
+            </div>
+            <div class="card-back">
+                <div class="card-content">
+                    <div class="card-hanzi">{{ cards[0].hanzi }}</div>
+                    {% if cards[0].pinyin %}
+                    <div class="card-pinyin">{{ cards[0].pinyin }}</div>
+                    {% endif %}
+                    <div class="card-english">{{ cards[0].english }}</div>
+                    {% if cards[0].example_sentence %}
+                    <div class="card-example terminal-text">
+                        <strong>例:</strong> {{ cards[0].example_sentence }}
+                    </div>
+                    {% endif %}
+                    {% if cards[0].part_of_speech or cards[0].measure_word %}
+                    <div class="card-meta terminal-text">
+                        {% if cards[0].base64_audio %}
+                        <button class="btn btn-audio" onclick="event.stopPropagation(); playAudio('{{ cards[0].base64_audio }}')">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% if cards[0].notes %}
+                    <div class="card-notes terminal-text">
+                        <strong>Note:</strong> {{ cards[0].notes }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- No Cards State -->
+        <div class="empty-state terminal-box">
+            <div class="empty-icon">🎉</div>
+            <h3>All cards reviewed!</h3>
+            <p class="terminal-text">Great job! You've completed all due cards for today.</p>
+            <button class="btn btn-primary glitch" onclick="window.location.href='{{ url_for('decks.deck_detail', deck_id=deck.id) }}'">
+                <span class="glitch-text">return_to_deck</span>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Study Controls -->
+    {% if cards %}
+    <div class="study-controls" id="studyControls">
+        <div class="rating-buttons">
+            <button class="btn btn-difficult" onclick="rateCard(1)">
+                <i class="fas fa-times"></i>
+                <span>Again</span>
+            </button>
+            <button class="btn btn-hard" onclick="rateCard(2)">
+                <i class="fas fa-redo"></i>
+                <span>Hard</span>
+            </button>
+            <button class="btn btn-good" onclick="rateCard(3)">
+                <i class="fas fa-check"></i>
+                <span>Good</span>
+            </button>
+            <button class="btn btn-easy" onclick="rateCard(4)">
+                <i class="fas fa-star"></i>
+                <span>Easy</span>
+            </button>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Completion Screen -->
+<div id="completionScreen" class="view">
+    <div class="completion-content terminal-box">
+        <div class="completion-icon">✨</div>
+        <h2>Study Session Complete!</h2>
+        <div class="completion-stats">
+            <div class="completion-stat">
+                <span class="stat-value" id="completedCount">0</span>
+                <span class="stat-label">cards studied</span>
+            </div>
+            <div class="completion-stat">
+                <span class="stat-value" id="sessionTime">0</span>
+                <span class="stat-label">minutes</span>
+            </div>
+        </div>
+        <div class="completion-actions">
+            <button class="btn btn-secondary terminal-box" onclick="window.location.href='{{ url_for('decks.deck_detail', deck_id=deck.id) }}'">
+                <span class="terminal-text">back_to_deck</span>
+            </button>
+            <button class="btn btn-primary glitch" onclick="window.location.href='{{ url_for('study.study_deck', deck_id=deck.id) }}'">
+                <span class="glitch-text">study_again</span>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block mobile_nav %}
+<nav class="mobile-bottom-nav">
+    <button class="nav-btn" onclick="window.location.href='{{ url_for('decks.deck_detail', deck_id=deck.id) }}'">
+        <i class="fas fa-arrow-left"></i>
+        <span>Exit</span>
+    </button>
+    <button class="nav-btn" onclick="flipCard()">
+        <i class="fas fa-sync-alt"></i>
+        <span>Flip</span>
+    </button>
+    <button class="nav-btn" id="finishBtn">
+        <i class="fas fa-flag-checkered"></i>
+        <span>Finish</span>
+    </button>
+</nav>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize study session when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.studyCards && window.studyCards.length > 0) {
+            // Update remaining cards count
+            const remainingCount = document.getElementById('remainingCount');
+            if (remainingCount) {
+                remainingCount.textContent = window.studyCards.length;
+            }
+        }
+        
+        // Setup finish button
+        const finishBtn = document.getElementById('finishBtn');
+        if (finishBtn) {
+            finishBtn.addEventListener('click', function() {
+                document.getElementById('completionScreen').style.display = 'block';
+                document.getElementById('studyView').style.display = 'none';
+            });
+        }
+    });
+    // Additional JS functions can be added here
+
+    function playAudio(base64Audio) {
+        const audio = new Audio('data:audio/wav;base64,' + base64Audio);
+        audio.play();
+    }
+</script>
+{% endblock %}

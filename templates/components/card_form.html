@@ -1,0 +1,108 @@
+<!-- Card Form Component -->
+<form id="cardForm" class="form" onsubmit="return false;">
+    <div class="form-group">
+        <label class="input-label">english *</label>
+        <div class="input-with-ai">
+            <input type="text" id="cardEnglish" required class="terminal-input" placeholder="Hello">
+            <button type="button" class="ai-suggestion-btn" onclick="getAISuggestion('english')" title="Get AI suggestion">
+                <i class="fas fa-robot"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group">
+            <label class="input-label">hanzi *</label>
+            <div class="input-with-ai">
+                <input type="text" id="cardHanzi" required class="terminal-input" placeholder="你好">
+                <button type="button" class="ai-suggestion-btn" onclick="getAISuggestion('hanzi')" title="Get AI suggestion">
+                    <i class="fas fa-robot"></i>
+                </button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="input-label">pinyin</label>
+            <div class="input-with-ai">
+                <input type="text" id="cardPinyin" class="terminal-input" placeholder="nǐ hǎo">
+                <button type="button" class="ai-suggestion-btn" onclick="getAISuggestion('pinyin')" title="Get AI suggestion">
+                    <i class="fas fa-robot"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group">
+            <label class="input-label">part_of_speech</label>
+            <div class="input-with-ai">
+                <select id="cardPartOfSpeech" class="terminal-input">
+                    <option value="">select...</option>
+                    <option value="noun">noun</option>
+                    <option value="verb">verb</option>
+                    <option value="adjective">adjective</option>
+                    <option value="adverb">adverb</option>
+                    <option value="pronoun">pronoun</option>
+                    <option value="preposition">preposition</option>
+                    <option value="conjunction">conjunction</option>
+                    <option value="interjection">interjection</option>
+                    <option value="phrase">phrase</option>
+                </select>
+                <button type="button" class="ai-suggestion-btn" onclick="getAISuggestion('part_of_speech')" title="Get AI suggestion">
+                    <i class="fas fa-robot"></i>
+                </button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="input-label">measure_word</label>
+            <div class="input-with-ai">
+                <input type="text" id="cardMeasureWord" class="terminal-input" placeholder="个">
+                <button type="button" class="ai-suggestion-btn" onclick="getAISuggestion('measure_word')" title="Get AI suggestion">
+                    <i class="fas fa-robot"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label class="input-label">traditional</label>
+        <div class="input-with-ai">
+            <input type="text" id="cardTraditional" class="terminal-input" placeholder="繁體字">
+            <button type="button" class="ai-suggestion-btn" onclick="getAISuggestion('traditional')" title="Get AI suggestion">
+                <i class="fas fa-robot"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label class="input-label">example_sentence</label>
+        <div class="input-with-ai">
+            <textarea id="cardExample" class="terminal-input" placeholder="你好，我叫小明。" rows="2"></textarea>
+            <button type="button" class="ai-suggestion-btn" onclick="getAISuggestion('example_sentence')" title="Get AI suggestion">
+                <i class="fas fa-robot"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label class="input-label">notes</label>
+        <div class="input-with-ai">
+            <textarea id="cardNotes" class="terminal-input" placeholder="// additional_notes..." rows="2"></textarea>
+            <button type="button" class="ai-suggestion-btn" onclick="getAISuggestion('notes')" title="Get AI suggestion">
+                <i class="fas fa-robot"></i>
+            </button>
+        </div>
+    </div>
+</form>
+
+<!-- Form Actions Component -->
+<div class="form-actions">
+    <button type="button" class="btn btn-secondary terminal-box" onclick="hideCardForm()">
+        <span class="terminal-text">cancel</span>
+    </button>
+    <button type="button" class="btn btn-secondary terminal-box" onclick="enhanceAllFields()">
+        <span class="terminal-text">ai_enhance_all</span>
+    </button>
+    <button type="submit" class="btn btn-primary glitch" onclick="submitCardForm()">
+        <span class="glitch-text">add_card</span>
+    </button>
+</div>

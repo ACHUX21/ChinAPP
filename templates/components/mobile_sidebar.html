@@ -1,0 +1,44 @@
+<!-- Mobile Sidebar Component -->
+<div class="mobile-sidebar" id="mobileSidebar">
+    <div class="sidebar-header">
+        <span class="logo-icon">神経</span>
+        <button class="close-sidebar" id="closeSidebar">×</button>
+    </div>
+    
+    <div class="sidebar-streak">
+        <div class="streak-info">
+            <span class="pulse-dot"></span>
+            <span class="streak-count" id="mobileCurrentStreak">0</span>
+            <span>day streak</span>
+        </div>
+        <div class="sidebar-stats terminal-text">
+            <div>> best_streak: <span id="mobileLongestStreak">0</span></div>
+            <div>> total_days: <span id="mobileTotalDays">0</span></div>
+        </div>
+    </div>
+    
+    <nav class="sidebar-nav">
+        <a href="{{ url_for('decks.index') }}" class="nav-item {% if request.endpoint == 'decks.index' %}active{% endif %}">
+            <i class="fas fa-grid"></i>
+            Dashboard
+        </a>
+        <a href="#" class="nav-item" onclick="showView('createDeckView'); closeMobileMenu()">
+            <i class="fas fa-plus"></i>
+            New Deck
+        </a>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section terminal-text">// quick_stats</div>
+        <div class="sidebar-stat">
+            <span>Decks:</span>
+            <span id="sidebarDeckCount">0</span>
+        </div>
+        <div class="sidebar-stat">
+            <span>Cards:</span>
+            <span id="sidebarCardCount">0</span>
+        </div>
+        <div class="sidebar-stat">
+            <span>Mastered:</span>
+            <span id="sidebarMasteryRate">0%</span>
+        </div>
+    </nav>
+</div>

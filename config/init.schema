@@ -1,0 +1,136 @@
+-- Chinese Flashcards Database Schema
+
+CREATE TABLE IF NOT EXISTS decks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    category VARCHAR(100),
+    level INTEGER,
+    color VARCHAR(7) DEFAULT '#8b5cf6',
+    is_archived BOOLEAN DEFAULT FALSE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS cards (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    deck_id INTEGER NOT NULL,
+    hanzi VARCHAR(50) NOT NULL,
+    pinyin VARCHAR(100),
+    english TEXT NOT NULL,
+    traditional VARCHAR(50),
+    measure_word VARCHAR(20),
+    part_of_speech VARCHAR(50),
+    example_sentence TEXT,
+    notes TEXT,
+    base64_audio TEXT,
+    is_archived BOOLEAN DEFAULT FALSE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (deck_id) REFERENCES decks(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS user_streaks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    current_streak INTEGER DEFAULT 0,
+    longest_streak INTEGER DEFAULT 0,
+    total_streak_days INTEGER DEFAULT 0,
+    last_study_date DATE,
+    streak_freeze_used BOOLEAN DEFAULT FALSE,
+    streak_freeze_count INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS study_sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    deck_id INTEGER NOT NULL,
+    session_type VARCHAR(20) DEFAULT 'review',
+    cards_studied INTEGER DEFAULT 0,
+    correct_answers INTEGER DEFAULT 0,
+    accuracy_rate DECIMAL(4,2),
+    duration_minutes INTEGER DEFAULT 0,
+    session_date DATE DEFAULT CURRENT_DATE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (deck_id) REFERENCES decks(id)
+);
+
+CREATE TABLE IF NOT EXISTS card_progress (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    card_id INTEGER NOT NULL,
+    deck_id INTEGER NOT NULL,
+    srs_level INTEGER DEFAULT 0,
+    next_review DATETIME,
+    interval_days INTEGER DEFAULT 0,
+    ease_factor DECIMAL(3,2) DEFAULT 2.5,
+    repetitions INTEGER DEFAULT 0,
+    total_reviews INTEGER DEFAULT 0,
+    correct_reviews INTEGER DEFAULT 0,
+    streak_current INTEGER DEFAULT 0,
+    streak_best INTEGER DEFAULT 0,
+    last_reviewed DATETIME,
+    writing_practice_count INTEGER DEFAULT 0,
+    pronunciation_score INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(card_id),
+    FOREIGN KEY (card_id) REFERENCES cards(id) ON DELETE CASCADE,
+    FOREIGN KEY (deck_id) REFERENCES decks(id)
+);
+
+CREATE TABLE IF NOT EXISTS daily_study_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    study_date DATE NOT NULL UNIQUE,
+    cards_studied INTEGER DEFAULT 0,
+    new_cards_learned INTEGER DEFAULT 0,
+    review_cards INTEGER DEFAULT 0,
+    minutes_studied INTEGER DEFAULT 0,
+    decks_studied JSON,
+    streak_maintained BOOLEAN DEFAULT FALSE,
+    daily_goal_met BOOLEAN DEFAULT FALSE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS achievements (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    icon VARCHAR(50),
+    requirement_type VARCHAR(50),
+    requirement_value INTEGER,
+    reward_type VARCHAR(50),
+    reward_value INTEGER DEFAULT 1,
+    is_unlocked BOOLEAN DEFAULT FALSE,
+    unlocked_at DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS streak_milestones (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    days_required INTEGER NOT NULL UNIQUE,
+    milestone_name VARCHAR(100),
+    reward_description TEXT,
+    is_achieved BOOLEAN DEFAULT FALSE,
+    achieved_at DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert initial user streak
+INSERT OR IGNORE INTO user_streaks (id, current_streak, longest_streak, total_streak_days) 
+VALUES (1, 0, 0, 0);
+
+-- Insert some default milestones
+INSERT OR IGNORE INTO streak_milestones (days_required, milestone_name, reward_description) VALUES
+(3, 'Getting Started!', 'Keep the momentum going'),
+(7, 'One Week Strong!', 'You''re building a great habit'),
+(14, 'Two Week Master!', 'Consistency is key'),
+(30, 'Monthly Master!', 'You''ve mastered daily practice'),
+(60, 'Two Month Pro!', 'Incredible dedication'),
+(100, 'Century Streak!', '100 days of learning!'),
+(365, 'Yearly Legend!', 'A full year of Chinese study!');
+
+-- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_cards_deck_id ON cards(deck_id);
+CREATE INDEX IF NOT EXISTS idx_card_progress_card_id ON card_progress(card_id);
+CREATE INDEX IF NOT EXISTS idx_card_progress_next_review ON card_progress(next_review);
+CREATE INDEX IF NOT EXISTS idx_study_sessions_date ON study_sessions(session_date);

@@ -1,0 +1,101 @@
+/* Base button styles */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 12px 20px;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    text-decoration: none;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Button variants */
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+    border: 1px solid var(--primary-dark);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    box-shadow: var(--glow);
+}
+
+.btn-secondary {
+    background: var(--surface-color);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--glow);
+}
+
+.btn-danger {
+    background: var(--error-color);
+    color: white;
+    border: 1px solid #dc2626;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+/* Button sizes */
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 12px;
+}
+
+.btn-lg {
+    padding: 16px 24px;
+    font-size: 16px;
+}
+
+/* Rating buttons */
+.btn-difficult { background: var(--error-color); color: white; }
+.btn-hard { background: var(--warning-color); color: white; }
+.btn-good { background: var(--success-color); color: white; }
+.btn-easy { background: var(--primary-color); color: white; }
+
+/* Glitch effect */
+.glitch {
+    position: relative;
+    overflow: hidden;
+}
+
+.glitch-text {
+    position: relative;
+}
+
+.glitch:hover .glitch-text::before,
+.glitch:hover .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.glitch:hover .glitch-text::before {
+    left: 2px;
+    text-shadow: -2px 0 var(--primary-color);
+    animation: glitch-1 0.5s infinite linear alternate-reverse;
+}
+
+.glitch:hover .glitch-text::after {
+    left: -2px;
+    text-shadow: 2px 0 var(--secondary-color);
+    animation: glitch-2 0.5s infinite linear alternate-reverse;
+}

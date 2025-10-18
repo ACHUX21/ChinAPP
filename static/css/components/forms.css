@@ -1,0 +1,103 @@
+/* Form groups */
+.form-group {
+    margin-bottom: var(--space-lg);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+}
+
+/* Labels */
+.input-label {
+    display: block;
+    margin-bottom: var(--space-sm);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    text-transform: lowercase;
+    font-family: var(--font-mono);
+}
+
+/* Inputs */
+.terminal-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--surface-light);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    transition: all var(--transition-normal);
+}
+
+.terminal-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: var(--glow);
+}
+
+/* AI Input wrapper */
+.input-with-ai {
+    position: relative;
+    width: 100%;
+}
+
+.ai-suggestion-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(183, 0, 255, 0.1);
+    border: 1px solid rgba(225, 0, 255, 0.3);
+    color: #a200ff;
+    border-radius: var(--radius-sm);
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ai-suggestion-btn:hover {
+    background: rgba(195, 0, 255, 0.2);
+    border-color: rgba(153, 0, 255, 0.5);
+}
+
+.ai-suggestion-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.ai-suggestion-btn.loading {
+    opacity: 0.7;
+}
+
+.ai-suggestion-btn.loading i {
+    animation: spin 1s linear infinite;
+}
+
+/* Adjust input padding for AI button */
+.terminal-input {
+    padding-right: 70px !important;
+}
+
+textarea.terminal-input {
+    padding-right: 70px !important;
+}
+
+select.terminal-input {
+    appearance: none;
+    padding-right: 70px !important;
+}
+
+/* Form actions */
+.form-actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: flex-end;
+    margin-top: var(--space-xl);
+}

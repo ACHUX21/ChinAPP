@@ -1,0 +1,112 @@
+/* Study header */
+.study-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+}
+
+.study-progress {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    flex: 1;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--surface-light);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--primary-color);
+    transition: width var(--transition-normal);
+}
+
+.progress-text {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    min-width: 60px;
+}
+
+/* Card container */
+.card-container {
+    perspective: 1000px;
+    margin: var(--space-xl) 0;
+    min-height: 300px;
+}
+
+/* Study controls */
+.study-controls {
+    margin-top: var(--space-xl);
+}
+
+.rating-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-md);
+}
+
+.rating-buttons .btn {
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-sm);
+    font-size: 0.75rem;
+}
+
+/* Study deck info */
+.study-deck-info {
+    text-align: center;
+    margin-bottom: var(--space-md);
+}
+
+.study-deck-info .deck-name {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-sm);
+}
+
+/* Completion screen */
+.completion-content {
+    text-align: center;
+    padding: var(--space-2xl) var(--space-xl);
+    max-width: 400px;
+    margin: var(--space-xl) auto;
+}
+
+.completion-icon {
+    font-size: 4rem;
+    margin-bottom: var(--space-md);
+}
+
+.completion-stats {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-2xl);
+    margin: var(--space-xl) 0;
+}
+
+.completion-stat {
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.completion-actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+}

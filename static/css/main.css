@@ -1,0 +1,379 @@
+/* Import all CSS files */
+@import url('components/buttons.css');
+@import url('components/forms.css');
+@import url('components/cards.css');
+@import url('components/navigation.css');
+@import url('components/study.css');
+@import url('utilities/responsive.css');
+@import url('utilities/animations.css');
+@import url('utilities/variables.css');
+
+/* Base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-mono);
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+.app-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Cyber background */
+.cyber-grid {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(139, 92, 246, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.scan-line {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    animation: scan 3s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Main content */
+.main-content {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-xl);
+    width: 100%;
+}
+
+/* Views */
+.view {
+    display: none;
+}
+
+.view.active {
+    display: block;
+}
+
+/* Terminal elements */
+.terminal-title {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin-bottom: var(--space-md);
+    font-weight: 600;
+}
+
+.terminal-text {
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+}
+
+/* Dashboard */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.stat-icon .hexagon {
+    width: 50px;
+    height: 50px;
+    background: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.stat-info h3 {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-xs);
+}
+
+.stat-info p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+/* Decks grid */
+.decks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-lg);
+}
+
+/* Deck detail */
+.view-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+    flex-wrap: wrap;
+}
+
+.deck-actions {
+    display: flex;
+    gap: var(--space-md);
+    margin-left: auto;
+}
+
+.deck-stats {
+    display: flex;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.deck-stat {
+    text-align: center;
+    padding: var(--space-md) var(--space-lg);
+}
+
+.stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: var(--space-sm);
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    text-transform: lowercase;
+}
+
+.cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+/* Deck info */
+.deck-info {
+    margin-bottom: var(--space-xl);
+}
+
+.deck-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.deck-description {
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.deck-tags {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+.tag {
+    padding: var(--space-xs) var(--space-md);
+    background: var(--surface-light);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: var(--space-2xl) var(--space-xl);
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: var(--space-md);
+}
+
+.empty-state h3 {
+    margin-bottom: var(--space-sm);
+    color: var(--text-primary);
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xl);
+}
+
+/* Toast notifications */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: var(--space-md) var(--space-lg);
+    background: var(--surface-color);
+    border: 1px solid var(--primary-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glow);
+    transform: translateX(400px);
+    transition: transform var(--transition-normal);
+    z-index: 1000;
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast.success {
+    border-color: var(--success-color);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+.toast.error {
+    border-color: var(--error-color);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+.toast.warning {
+    border-color: var(--warning-color);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+}
+
+/* Confirmation modal */
+.confirmation-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 15, 35, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.confirmation-modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    max-width: 400px;
+    width: 90%;
+    box-shadow: var(--glow-strong);
+}
+
+.modal-header {
+    margin-bottom: var(--space-md);
+}
+
+.modal-title {
+    color: var(--error-color);
+    font-size: 1.25rem;
+    margin-bottom: var(--space-sm);
+}
+
+.modal-message {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xl);
+}
+
+.modal-actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: flex-end;
+}
+
+/* Error pages */
+.error-container {
+    text-align: center;
+    padding: var(--space-2xl) var(--space-xl);
+    max-width: 500px;
+    margin: var(--space-2xl) auto;
+}
+
+.error-code {
+    font-size: 6rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: var(--space-md);
+}
+
+.error-container h1 {
+    margin-bottom: var(--space-md);
+    color: var(--text-primary);
+}
+
+.error-container p {
+    margin-bottom: var(--space-xl);
+    color: var(--text-secondary);
+}
+/* Example CSS for the new footer to match the aesthetic */
+.footer {
+    width: 100%;
+    padding: 10px 20px;
+    background-color: var(--color-bg-darker); /* Assuming a dark background variable exists */
+    border-top: 1px solid var(--color-accent-blue); /* Adding a terminal-like border */
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--color-text-faded); /* Assuming a faded text color variable exists */
+    margin-top: auto; /* Pushes the footer to the bottom of the flex container */
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.footer p {
+    margin: 0;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Ensure the app-container is a flex column for the footer to stick to the bottom */
+.app-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    flex-grow: 1; /* Allows main content to take up available space */
+}

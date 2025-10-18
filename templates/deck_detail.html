@@ -1,0 +1,531 @@
+{% extends "base.html" %}
+
+{% block title %}{{ deck.name }} - 神経 flashcards{% endblock %}
+
+{% block extra_css %}
+<style>
+    .fa-robot { color: #a442f4; }
+    .view { display: none; }
+    .view.active { display: block; }
+    
+    /* Mobile responsive improvements */
+    @media (max-width: 768px) {
+        .deck-stats {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .form-row {
+            flex-direction: column;
+        }
+        
+        .card-content {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .card-actions {
+            margin-top: 10px;
+            justify-content: flex-end;
+        }
+    }
+    
+    /* Error message styling */
+    .error-message {
+        color: #ff4444;
+        font-size: 0.9em;
+        margin-top: 5px;
+        display: none;
+    }
+    
+    .loading {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Deck Detail View -->
+<div id="deckView" class="view active">
+    <div class="view-header">
+        <button class="btn btn-secondary terminal-box back-btn" onclick="window.location.href='{{ url_for('decks.index') }}'">
+            <span class="terminal-text">← back</span>
+        </button>
+        <h2 class="terminal-title">> {{ deck.name }}</h2>
+        <div class="deck-actions">
+            <button class="btn btn-primary glitch" onclick="startStudySession({{ deck.id }})">
+                <span class="glitch-text">▶ study</span>
+            </button>
+            <button class="btn btn-secondary terminal-box" onclick="showAddCardForm()">
+                <span class="terminal-text">+ card</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Deck Stats -->
+    <div class="deck-stats">
+        <div class="deck-stat terminal-box">
+            <span class="stat-number glitch-text">{{ card_count }}</span>
+            <span class="stat-label">cards</span>
+        </div>
+        <div class="deck-stat terminal-box">
+            <span class="stat-number glitch-text">{{ due_count }}</span>
+            <span class="stat-label">due</span>
+        </div>
+        <div class="deck-stat terminal-box">
+            <span class="stat-number glitch-text">{{ mastery_rate }}%</span>
+            <span class="stat-label">mastered</span>
+        </div>
+    </div>
+
+    <!-- Deck Info -->
+    <div class="deck-info terminal-box">
+        <div class="deck-meta">
+            {% if deck.description %}
+            <p class="deck-description">{{ deck.description }}</p>
+            {% endif %}
+            <div class="deck-tags">
+                {% if deck.category %}
+                <span class="tag terminal-text">{{ deck.category }}</span>
+                {% endif %}
+                {% if deck.level %}
+                <span class="tag terminal-text">HSK {{ deck.level }}</span>
+                {% endif %}
+                <span class="tag terminal-text">created: {{ deck.created_at.split(' ')[0] if deck.created_at else 'N/A' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards List -->
+    <div class="cards-section">
+        <h3 class="terminal-title">cards_list</h3>
+        <div class="cards-list" id="cardsList">
+            {% for card in cards %}
+            <div class="card-item terminal-box" id="card-{{ card.id }}">
+                <div class="card-content">
+                    <div class="card-text">
+                        <div class="card-hanzi">{{ card.hanzi }}</div>
+                        {% if card.pinyin %}
+                        <div class="card-pinyin terminal-text">{{ card.pinyin }}</div>
+                        {% endif %}
+                        <div class="card-english">{{ card.english }}</div>
+                        {% if card.example_sentence %}
+                        <div class="card-example terminal-text">例: {{ card.example_sentence }}</div>
+                        {% endif %}
+                        {% if card.part_of_speech or card.measure_word %}
+                        <div class="card-meta terminal-text">
+                            {% if card.base64_audio %}
+                            <button class="btn btn-sm btn-secondary" onclick="new Audio('data:audio/wav;base64,{{ card.base64_audio }}').play()" title="Play pronunciation">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-progress">
+                        {% if card.srs_level %}
+                        <div class="srs-level level-{{ card.srs_level }}">
+                            Lv.{{ card.srs_level }}
+                        </div>
+                        {% endif %}
+                        {% if card.next_review %}
+                        <div class="next-review terminal-text">
+                            {{ card.next_review }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- Delete Button -->
+                <div class="card-actions">
+                    <button class="btn btn-danger btn-sm" onclick="deleteCard({{ card.id }})" title="Delete card">
+                        <i class="fas fa-trash"></i>
+                        <span class="desktop-only">delete</span>
+                    </button>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state terminal-box">
+                <div class="empty-icon">💭</div>
+                <h3>No cards yet</h3>
+                <p class="terminal-text">Add your first card to start learning</p>
+                <button class="btn btn-primary glitch" onclick="showAddCardForm()">
+                    <span class="glitch-text">+ add_first_card</span>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Add Card Form -->
+<div id="addCardView" class="view">
+    <input name="audio_base64" type="hidden" id="audioBase64" value="">
+    <div class="view-header">
+        <button class="btn btn-secondary terminal-box back-btn" onclick="hideAddCardForm()">
+            <span class="terminal-text">← back</span>
+        </button>
+        <h2 class="terminal-title">> add_new_card</h2>
+    </div>
+    <form id="addCardForm" class="form" onsubmit="return addCard(event, {{ deck.id }})">
+        <div class="form-group">
+            <label class="input-label">english *</label>
+            <div class="input-with-ai">
+                <input type="text" id="cardEnglish" required class="terminal-input" placeholder="Hello">
+            </div>
+            <div class="error-message" id="englishError"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="input-label">hanzi *</label>
+                <div class="input-with-ai">
+                    <input type="text" id="cardHanzi" required class="terminal-input" placeholder="你好">
+                    <button type="button" class="ai-suggestion-btn" onclick="getAISuggestion('hanzi')" title="Get AI suggestion">
+                        <i class="fas fa-robot"></i>
+                    </button>
+                </div>
+                <div class="error-message" id="hanziError"></div>
+            </div>
+            <div class="form-group">
+                <label class="input-label">pinyin</label>
+                <div class="input-with-ai">
+                    <input type="text" id="cardPinyin" class="terminal-input" placeholder="nǐ hǎo">
+                    <button type="button" class="ai-suggestion-btn" onclick="getAISuggestion('pinyin')" title="Get AI suggestion">
+                        <i class="fas fa-robot"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-row" hidden>
+            <div class="form-group" hidden>
+                <label class="input-label">part_of_speech</label>
+                <div class="input-with-ai">
+                    <select id="cardPartOfSpeech" class="terminal-input">
+                        <option value="">select...</option>
+                        <option value="noun">noun</option>
+                        <option value="verb">verb</option>
+                        <option value="adjective">adjective</option>
+                        <option value="adverb">adverb</option>
+                        <option value="pronoun">pronoun</option>
+                        <option value="preposition">preposition</option>
+                        <option value="conjunction">conjunction</option>
+                        <option value="interjection">interjection</option>
+                        <option value="phrase">phrase</option>
+                    </select>
+                    <button type="button" class="ai-suggestion-btn" onclick="getAISuggestion('part_of_speech')" title="Get AI suggestion">
+                        <i class="fas fa-robot"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="form-group" hidden>
+                <label class="input-label">measure_word</label>
+                <input type="text" id="cardMeasureWord" class="terminal-input" placeholder="个">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group" hidden>
+                <label class="input-label">traditional</label>
+                <input type="text" id="cardTraditional" class="terminal-input" placeholder="Traditional characters">
+            </div>
+            
+            <div class="form-group">
+                <label class="input-label">voice</label>
+                <div class="input-with-ai" id="voice_section">
+                    <button type="button" class="btn btn-secondary terminal-box" onclick="generateVoice()">
+                        <span class="terminal-text">generate_voice</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="input-label">example_sentence</label>
+            <div class="input-with-ai">
+                <textarea id="cardExample" class="terminal-input" placeholder="你好，我叫小明。" rows="2"></textarea>
+                <button type="button" class="ai-suggestion-btn" onclick="getAISuggestion('example_sentence')" title="Get AI suggestion">
+                    <i class="fas fa-robot"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="input-label">notes</label>
+            <div class="input-with-ai">
+                <textarea id="cardNotes" class="terminal-input" placeholder="// additional_notes..." rows="2"></textarea>
+                <button type="button" class="ai-suggestion-btn" onclick="getAISuggestion('notes')" title="Get AI suggestion">
+                    <i class="fas fa-robot"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary terminal-box" onclick="hideAddCardForm()">
+                <span class="terminal-text">cancel</span>
+            </button>
+            <button type="submit" class="btn btn-primary glitch" id="submitBtn">
+                <span class="glitch-text">add_card</span>
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block mobile_nav %}
+<nav class="mobile-bottom-nav">
+    <button class="nav-btn" onclick="window.location.href='{{ url_for('decks.index') }}'">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back</span>
+    </button>
+    <button class="nav-btn active" onclick="startStudySession({{ deck.id }})">
+        <i class="fas fa-play"></i>
+        <span>Study</span>
+    </button>
+    <button class="nav-btn" onclick="showAddCardForm()">
+        <i class="fas fa-plus"></i>
+        <span>Add Card</span>
+    </button>
+</nav>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // View management
+    function showView(viewId) {
+        document.querySelectorAll('.view').forEach(view => {
+            view.classList.remove('active');
+        });
+        document.getElementById(viewId).classList.add('active');
+    }
+
+    function showAddCardForm() {
+        showView('addCardView');
+        document.getElementById('cardEnglish').focus();
+    }
+
+    function hideAddCardForm() {
+        showView('deckView');
+        document.getElementById('addCardForm').reset();
+        clearErrors();
+    }
+
+    function clearErrors() {
+        document.querySelectorAll('.error-message').forEach(error => {
+            error.style.display = 'none';
+            error.textContent = '';
+        });
+    }
+
+    function showError(field, message) {
+        const errorElement = document.getElementById(field + 'Error');
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+    }
+
+    // Card management functions
+    function startStudySession(deckId) {
+        window.location.href = `/decks/${deckId}/study`;
+    }
+
+    async function addCard(event, deckId) {
+        event.preventDefault();
+        
+        clearErrors();
+        
+        const formData = {
+            english: document.getElementById('cardEnglish').value.trim(),
+            hanzi: document.getElementById('cardHanzi').value.trim(),
+            pinyin: document.getElementById('cardPinyin').value.trim(),
+            part_of_speech: document.getElementById('cardPartOfSpeech').value,
+            measure_word: document.getElementById('cardMeasureWord').value.trim(),
+            traditional: document.getElementById('cardTraditional').value.trim(),
+            example_sentence: document.getElementById('cardExample').value.trim(),
+            notes: document.getElementById('cardNotes').value.trim()
+        };
+
+        // Basic validation
+        if (!formData.english) {
+            showError('english', 'English translation is required');
+            return false;
+        }
+        if (!formData.hanzi) {
+            showError('hanzi', 'Hanzi characters are required');
+            return false;
+        }
+
+        const submitBtn = document.getElementById('submitBtn');
+        const originalText = submitBtn.innerHTML;
+        
+        try {
+            submitBtn.innerHTML = '<span class="glitch-text">adding...</span>';
+            submitBtn.classList.add('loading');
+
+            const response = await fetch(`/decks/${deckId}/cards`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                const errorData = await response.json();
+                alert('Error adding card: ' + (errorData.message || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Network error adding card');
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.classList.remove('loading');
+        }
+        
+        return false;
+    }
+
+    async function deleteCard(cardId) {
+        if (!confirm('Are you sure you want to delete this card? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/cards/${cardId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                const cardElement = document.getElementById(`card-${cardId}`);
+                if (cardElement) {
+                    cardElement.remove();
+                }
+                // Show success message or update stats
+                if (document.querySelectorAll('.card-item').length === 0) {
+                    window.location.reload();
+                }
+            } else {
+                alert('Error deleting card');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error deleting card');
+        }
+    }
+
+    // AI suggestion function
+    async function getAISuggestion(field) {
+        const english = document.getElementById('cardEnglish').value.trim();
+        if (!english) {
+            alert('Please enter English text first');
+            document.getElementById('cardEnglish').focus();
+            return;
+        }
+
+        const button = event.target.closest('.ai-suggestion-btn');
+        const originalHtml = button.innerHTML;
+
+        try {
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            button.disabled = true;
+
+            const response = await fetch('/ai/suggest', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    english: english,
+                    field: field
+                })
+            });
+
+            if (response.ok) {
+                const suggestion = await response.json();
+                const fieldId = `card${field.charAt(0).toUpperCase() + field.slice(1)}`;
+                document.getElementById(fieldId).value = suggestion.value || '';
+            } else {
+                alert('Error getting AI suggestion');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error getting AI suggestion');
+        } finally {
+            button.innerHTML = originalHtml;
+            button.disabled = false;
+        }
+    }
+
+    // Voice generation function
+    async function generateVoice() {
+        const hanzi = document.getElementById('cardHanzi').value.trim();
+        if (!hanzi) {
+            alert('Please enter Hanzi text first');
+            document.getElementById('cardHanzi').focus();
+            return;
+        }
+
+        const button = event.target;
+        const originalText = button.innerHTML;
+
+        try {
+            button.innerHTML = '<span class="terminal-text">generating...</span>';
+            button.disabled = true;
+
+            const response = await fetch('/ai/generate-voice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    text: hanzi
+                })
+            });
+
+            if (response.ok) {
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioUrl);
+                await audio.play();
+            } else {
+                alert('Error generating voice');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error generating voice');
+        } finally {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                hideAddCardForm();
+            }
+        });
+        
+        // Auto-focus English field when showing add card form
+        const addCardView = document.getElementById('addCardView');
+        if (addCardView) {
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        if (addCardView.classList.contains('active')) {
+                            document.getElementById('cardEnglish').focus();
+                        }
+                    }
+                });
+            });
+            observer.observe(addCardView, { attributes: true });
+        }
+    });
+</script>
+{% endblock %}
