@@ -50,7 +50,7 @@
                         <strong>例:</strong> {{ cards[0].example_sentence }}
                     </div>
                     {% endif %}
-                    {% if cards[0].part_of_speech or cards[0].measure_word %}
+                    {% if cards[0].base64_audio %}
                     <div class="card-meta terminal-text">
                         {% if cards[0].base64_audio %}
                         <button class="btn btn-audio" onclick="event.stopPropagation(); playAudio('{{ cards[0].base64_audio }}')">

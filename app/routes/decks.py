@@ -82,6 +82,7 @@ def deck_detail(deck_id):
         ''', (deck_id,)).fetchall()
         
         cards = [dict(card) for card in cards]
+        print(cards)
         stats = calculate_deck_stats(cards)
 
         return render_template('deck_detail.html',

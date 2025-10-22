@@ -113,7 +113,7 @@
                         {% if card.example_sentence %}
                         <div class="card-example terminal-text">例: {{ card.example_sentence }}</div>
                         {% endif %}
-                        {% if card.part_of_speech or card.measure_word %}
+                        {% if card.base64_audio %}
                         <div class="card-meta terminal-text">
                             {% if card.base64_audio %}
                             <button class="btn btn-sm btn-secondary" onclick="new Audio('data:audio/wav;base64,{{ card.base64_audio }}').play()" title="Play pronunciation">

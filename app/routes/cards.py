@@ -89,6 +89,7 @@ def api_deck_cards(deck_id):
             LEFT JOIN card_progress cp ON c.id = cp.card_id 
             WHERE c.deck_id = ? AND c.is_archived = FALSE
         ''', (deck_id,)).fetchall()
+        print(cards)
         return jsonify([dict(card) for card in cards])
     except Exception as e:
         print(f"Database error: {e}")
