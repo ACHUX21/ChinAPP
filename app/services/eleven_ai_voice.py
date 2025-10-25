@@ -6,7 +6,7 @@ from elevenlabs import VoiceSettings
 from elevenlabs.client import ElevenLabs
 from elevenlabs.play import play
 from app.services.ai_integration import enhance_flashcard
-load_dotenv()
+load_dotenv(dotenv_path="../")
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
 elevenlabs = ElevenLabs(
