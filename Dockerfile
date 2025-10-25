@@ -9,7 +9,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN mkdir -p data
+
+RUN if [ ! -f chinese_flashcards.db ]; then sqlite3 chinese_flashcards.db < ./config/init.schema; fi
 
 EXPOSE 8000
 
